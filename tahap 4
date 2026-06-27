@@ -1,0 +1,195 @@
+Mantap. Sekarang kita mulai membuat login yang benar-benar berfungsi. Kita tidak akan lagi membuat contoh sederhana, tetapi menggunakan struktur yang nantinya bisa dipakai sampai aplikasi selesai.
+
+Tahap 5 - Membuat Koneksi Database
+
+Masuk ke folder project:
+
+cd ~/cafepos
+
+Buat file .env
+
+nano .env
+
+Isi seperti berikut:
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=PASSWORD_MYSQL_KAMU
+DB_NAME=cafepos
+
+SESSION_SECRET=cafepos123
+PORT=3000
+
+Ganti PASSWORD_MYSQL_KAMU dengan password root MariaDB yang kamu buat saat mysql_secure_installation.
+
+Simpan:
+
+Ctrl + O
+Enter
+Ctrl + X
+Tahap 6 - Buat File Koneksi Database
+
+Masuk ke folder config:
+
+cd ~/cafepos/config
+nano database.js
+
+Isi:
+
+const mysql = require("mysql2");
+
+const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
+
+connection.connect((err) => {
+    if (err) {
+        console.error("Database gagal terhubung:", err);
+        return;
+    }
+
+    console.log("Database berhasil terhubung.");
+});
+
+module.exports = connection;
+
+Simpan.
+
+Tahap 7 - Ubah app.js
+
+Buka:
+
+cd ~/cafepos
+nano app.js
+
+Ganti dengan isi berikut:
+
+require("dotenv").config();
+
+const express = require("express");
+const path = require("path");
+const session = require("express-session");
+
+const db = require("./config/database");
+
+const app = express();
+
+app.set("view engine", "ejs");
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.get("/", (req, res) => {
+    res.redirect("/login");
+});
+
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server berjalan di port ${PORT}`);
+});
+Tahap 8 - Buat Password Hash
+
+Jalankan Node.js:
+
+node
+
+Lalu ketik satu per satu:
+
+const bcrypt = require("bcrypt");
+bcrypt.hash("admin123",10).then(console.log);
+
+Nanti akan muncul hasil seperti:
+
+$2b$10$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Salin hasil hash tersebut.
+
+Keluar dari Node:
+
+.exit
+Tahap 9 - Simpan Admin ke Database
+
+Masuk ke MariaDB:
+
+sudo mysql
+
+Pilih database:
+
+USE cafepos;
+
+Masukkan data admin (ganti HASH_PASSWORD dengan hasil bcrypt yang tadi):
+
+INSERT INTO users(fullname, username, password, role)
+VALUES(
+'Administrator',
+'admin',
+'HASH_PASSWORD',
+'admin'
+);
+
+Contoh:
+
+INSERT INTO users(fullname, username, password, role)
+VALUES(
+'Administrator',
+'admin',
+'$2b$10$................',
+'admin'
+);
+
+Cek:
+
+SELECT id, fullname, username, role FROM users;
+
+Harus muncul:
+
++----+---------------+----------+-------+
+| id | fullname      | username | role  |
++----+---------------+----------+-------+
+|  1 | Administrator | admin    | admin |
++----+---------------+----------+-------+
+
+Keluar:
+
+EXIT;
+Setelah Tahap Ini
+
+Selanjutnya kita akan membuat:
+
+✅ Form login yang benar-benar memeriksa username dan password.
+✅ Session login.
+✅ Redirect ke dashboard.
+✅ Proteksi halaman (kalau belum login tidak bisa membuka dashboard).
+✅ Tombol logout.
+Saran untuk proyek
+
+Saya juga ingin meningkatkan kualitas proyek ini agar terlihat seperti aplikasi profesional dengan fitur tambahan seperti:
+
+Dashboard modern (AdminLTE atau Bootstrap Dashboard)
+Grafik penjualan
+Sidebar
+Upload gambar menu
+Struk PDF
+Barcode/QR Code pesanan
+Dark mode
+Hak akses Admin dan Kasir
+Backup database
+
+Hasil akhirnya akan terlihat seperti aplikasi POS yang benar-benar digunakan di sebuah kafe.
+
+Sebelum lanjut ke tahap berikutnya, beri tahu saya apakah langkah di atas berhasil, terutama saat membuat hash password dan memasukkan akun admin ke database. Jika ada error, kirimkan pesan errornya agar kita perbaiki bersama.
