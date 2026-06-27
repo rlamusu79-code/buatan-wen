@@ -1,0 +1,109 @@
+Mantap! 🎉
+
+Output:
+
+Server Running
+Database Connected
+
+Artinya:
+
+✅ Node.js berjalan
+✅ Express berjalan
+✅ Database MariaDB berhasil terhubung
+
+Sekarang kita masuk ke Tahap 6: Membuat Login yang Benar-Benar Berfungsi.
+
+Tahap 6.1 - Cek Struktur Project
+
+Pastikan project seperti ini:
+
+cafepos/
+│
+├── app.js
+├── package.json
+├── .env
+│
+├── config/
+│   └── database.js
+│
+├── routes/
+│   └── auth.js
+│
+├── middleware/
+│   └── auth.js
+│
+├── views/
+│   ├── login.ejs
+│   └── dashboard.ejs
+│
+├── public/
+│   ├── css/
+│   ├── js/
+│   └── images/
+
+Kalau belum ada, buat:
+
+mkdir -p routes middleware views public/css public/js public/images
+Tahap 6.2 - Saya ingin mengubah metode
+
+Mulai sekarang jangan lagi semua kode ditaruh di app.js.
+
+Kita akan menggunakan pola MVC (Model - View - Controller) seperti aplikasi profesional.
+
+Jadi nanti:
+
+Browser
+      │
+      ▼
+Routes
+      │
+      ▼
+Controller
+      │
+      ▼
+Database
+      │
+      ▼
+MariaDB
+
+Ini jauh lebih rapi dan mudah dikembangkan.
+
+Tahap 6.3 - Sebelum menulis kode lagi
+
+Saya ingin memastikan struktur project yang kamu miliki sekarang agar kode yang saya berikan benar-benar cocok.
+
+Jalankan perintah ini:
+cd ~/cafepos
+
+tree -L 2
+
+Kalau tree belum terpasang:
+
+sudo dnf install tree -y
+
+Lalu jalankan lagi:
+
+tree -L 2
+Kirim hasilnya ke saya.
+Kenapa saya minta ini?
+
+Karena saya akan membuat proyek ini menjadi Cafe POS profesional dengan fitur:
+
+🔐 Login Admin & Kasir
+📊 Dashboard modern
+☕ CRUD Menu
+📂 CRUD Kategori
+🛒 Halaman Kasir (POS)
+💳 Pembayaran & kembalian otomatis
+📜 Riwayat transaksi
+📈 Grafik penjualan
+🧾 Cetak struk PDF
+📄 Export Excel
+📷 Upload gambar menu
+👤 Manajemen user
+🌙 Dark Mode
+🚀 Deploy ke Nginx + PM2
+
+Saya ingin memastikan fondasinya rapi terlebih dahulu, supaya nanti kita tidak perlu mengubah banyak file di tengah jalan.
+
+➡️ Kirim hasil tree -L 2, lalu saya akan memberikan struktur proyek lengkap dan kita mulai membuat proses login yang benar-benar bekerja.
