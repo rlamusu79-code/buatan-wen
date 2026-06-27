@@ -1,0 +1,202 @@
+Tentu, saya akan membantu sampai berhasil. Dari percakapan kita sebelumnya, saya tahu kamu sudah menggunakan AWS EC2 (Amazon Linux). Kita akan membuat aplikasi Cafe POS yang benar-benar bisa dipakai.
+
+Saya sarankan kita menggunakan teknologi berikut:
+
+Frontend: HTML, CSS, Bootstrap 5, JavaScript
+Backend: Node.js + Express
+Template Engine: EJS
+Database: MariaDB (kompatibel dengan MySQL)
+Login: Express Session + bcrypt
+Deploy: Nginx + PM2 di EC2
+Roadmap Proyek
+
+Kita akan membangun proyek ini tahap demi tahap.
+
+Tahap 1: Persiapan Server EC2
+
+Install semua kebutuhan.
+
+sudo dnf update -y
+
+sudo dnf install git nginx mariadb105-server nano unzip zip wget curl -y
+
+sudo dnf install nodejs npm -y
+
+sudo npm install -g pm2
+
+Cek versi:
+
+node -v
+npm -v
+git --version
+nginx -v
+mysql --version
+
+Kalau semua muncul versinya, lanjut.
+
+Tahap 2: Jalankan MariaDB
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+
+Cek:
+
+sudo systemctl status mariadb
+
+Harus muncul:
+
+active (running)
+Tahap 3: Amankan Database
+
+Jalankan:
+
+sudo mysql_secure_installation
+
+Jawaban yang disarankan:
+
+Enter current password:
+=> Enter
+
+Set root password?
+=> Y
+
+Masukkan password baru
+
+Remove anonymous users?
+=> Y
+
+Disallow root login remotely?
+=> Y
+
+Remove test database?
+=> Y
+
+Reload privilege tables?
+=> Y
+Tahap 4: Login ke Database
+sudo mysql -u root -p
+
+Masukkan password yang baru dibuat.
+
+Tahap 5: Buat Database
+
+Di prompt MariaDB:
+
+CREATE DATABASE cafepos;
+
+USE cafepos;
+
+Lalu:
+
+SHOW DATABASES;
+
+Harus muncul cafepos.
+
+Tahap 6: Buat Folder Project
+
+Keluar dari MariaDB:
+
+exit;
+
+Lalu:
+
+cd ~
+
+mkdir cafepos
+
+cd cafepos
+Tahap 7: Inisialisasi Project
+npm init -y
+Tahap 8: Install Library
+npm install express
+
+npm install ejs
+
+npm install express-session
+
+npm install bcrypt
+
+npm install mysql2
+
+npm install dotenv
+
+npm install body-parser
+
+npm install multer
+
+npm install uuid
+
+npm install cors
+Tahap 9: Struktur Folder
+cafepos/
+│
+├── app.js
+├── package.json
+├── .env
+├── routes/
+├── controllers/
+├── models/
+├── middleware/
+├── config/
+├── public/
+│   ├── css/
+│   ├── js/
+│   └── images/
+└── views/
+    ├── login.ejs
+    ├── dashboard.ejs
+    ├── menu.ejs
+    ├── transaksi.ejs
+    └── history.ejs
+
+Buat folder:
+
+mkdir routes controllers models middleware config public views
+
+mkdir public/css public/js public/images
+Setelah Tahap 1 Selesai
+
+Kita akan lanjut membuat:
+
+Halaman Login
+Dashboard
+Database lengkap
+CRUD Menu
+Sistem Kasir
+Riwayat Transaksi
+Laporan Penjualan
+Upload Gambar Menu
+Dashboard dengan grafik
+Deploy ke Nginx + PM2
+Cara Kerja Kita
+
+Agar tidak bingung dan mudah diperbaiki kalau ada masalah:
+
+Saya memberikan 1 langkah.
+Kamu menjalankan di EC2.
+Kamu kirim hasilnya (atau screenshot jika ada error).
+Saya bantu sampai langkah itu berhasil.
+Baru lanjut ke langkah berikutnya.
+
+Dengan cara ini, kemungkinan berhasil jauh lebih tinggi daripada mengerjakan semuanya sekaligus.
+
+Langkah pertama sekarang
+
+Jalankan perintah berikut di EC2:
+
+sudo dnf update -y
+
+sudo dnf install git nginx mariadb105-server nano unzip zip wget curl -y
+
+sudo dnf install nodejs npm -y
+
+sudo npm install -g pm2
+
+Lalu kirim hasil dari:
+
+node -v
+npm -v
+git --version
+nginx -v
+mysql --version
+
+Dari hasil itu saya akan memastikan semua sudah terpasang dengan benar, lalu kita lanjut ke pembuatan database dan aplikasi Cafe POS.
