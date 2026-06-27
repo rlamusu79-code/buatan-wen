@@ -1,0 +1,160 @@
+Mantap! Kalau Tahap 1 sudah selesai, sekarang kita masuk ke Tahap 2: membuat database dan struktur proyek Cafe POS.
+
+Tahap 2 - Membuat Database
+
+Login ke MariaDB:
+
+sudo mysql
+
+Kalau berhasil akan muncul:
+
+MariaDB [(none)]>
+Buat database
+
+Jalankan:
+
+CREATE DATABASE cafepos;
+
+Lalu gunakan database tersebut:
+
+USE cafepos;
+Buat tabel users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin','kasir') DEFAULT 'kasir',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+Buat tabel categories
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+Buat tabel menus
+CREATE TABLE menus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT,
+    name VARCHAR(100),
+    price DECIMAL(10,2),
+    stock INT DEFAULT 0,
+    image VARCHAR(255),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+Buat tabel transactions
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    invoice VARCHAR(30),
+    user_id INT,
+    total DECIMAL(12,2),
+    payment DECIMAL(12,2),
+    change_money DECIMAL(12,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+Buat tabel transaction_details
+CREATE TABLE transaction_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_id INT,
+    menu_id INT,
+    qty INT,
+    price DECIMAL(10,2),
+    subtotal DECIMAL(12,2),
+    FOREIGN KEY(transaction_id) REFERENCES transactions(id),
+    FOREIGN KEY(menu_id) REFERENCES menus(id)
+);
+Tambahkan kategori
+INSERT INTO categories(name)
+VALUES
+('Coffee'),
+('Non Coffee'),
+('Tea'),
+('Snack');
+Tambahkan contoh menu
+INSERT INTO menus(category_id,name,price,stock,image)
+VALUES
+(1,'Espresso',25000,50,'espresso.jpg'),
+(1,'Cappuccino',30000,40,'cappuccino.jpg'),
+(2,'Chocolate',28000,30,'chocolate.jpg'),
+(4,'French Fries',22000,20,'fries.jpg');
+Cek tabel
+SHOW TABLES;
+
+Harus muncul:
+
+categories
+menus
+transaction_details
+transactions
+users
+
+Keluar dari MariaDB:
+
+EXIT;
+Tahap 3 - Membuat Project Node.js
+
+Masuk ke folder project:
+
+cd ~/cafepos
+
+Kalau folder belum ada:
+
+mkdir ~/cafepos
+cd ~/cafepos
+Inisialisasi
+npm init -y
+Install semua package
+npm install express ejs mysql2 express-session bcrypt dotenv body-parser multer uuid
+
+Install juga agar server otomatis restart saat pengembangan:
+
+npm install --save-dev nodemon
+Buat struktur folder
+mkdir routes controllers middleware config models views public
+mkdir public/css public/js public/images
+
+Strukturnya menjadi:
+
+cafepos/
+│
+├── app.js
+├── package.json
+├── .env
+├── config/
+├── controllers/
+├── middleware/
+├── models/
+├── routes/
+├── views/
+└── public/
+    ├── css/
+    ├── js/
+    └── images/
+Setelah tahap ini selesai
+
+Kita akan mulai membuat aplikasi:
+
+🔐 Halaman Login
+🏠 Dashboard
+👥 Login Admin & Kasir
+🍽️ CRUD Menu
+🛒 Halaman Kasir
+📋 Riwayat Penjualan
+📊 Dashboard Grafik
+🧾 Cetak Struk
+📄 Export PDF & Excel
+🌐 Deploy ke Nginx + PM2
+Saya akan mendampingi sampai selesai
+
+Saya sarankan kita benar-benar membangun aplikasi ini seperti proyek profesional, bukan sekadar contoh sederhana.
+
+Saat kamu sudah menyelesaikan Tahap 2 di atas, kirimkan hasil dari:
+
+ls
+
+dan jika masih berada di MariaDB:
+
+SHOW TABLES;
+
+Kalau semua sudah benar, kita lanjut membuat halaman Login dan koneksi database.
