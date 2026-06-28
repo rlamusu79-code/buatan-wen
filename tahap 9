@@ -1,0 +1,265 @@
+Siap. Mulai sekarang kita akan membuat Master Data Menu seperti aplikasi kasir profesional. Kita kerjakan bertahap agar mudah diperiksa jika ada error.
+
+Target halaman Menu:
+
+📋 Tabel daftar menu
+➕ Tambah Menu
+🖼️ Upload gambar
+💰 Harga
+📦 Stok
+🏷️ Kategori
+✏️ Edit
+🗑️ Hapus
+Tahap 13.1 - Struktur Folder
+
+Pastikan struktur project seperti ini:
+
+cafepos
+│
+├── app.js
+├── config
+├── middleware
+├── public
+│   ├── adminlte
+│   ├── css
+│   ├── js
+│   ├── images
+│   └── uploads
+│
+├── routes
+│   ├── auth.js
+│   ├── category.js
+│   └── menu.js
+│
+├── views
+│   ├── layout
+│   ├── dashboard.ejs
+│   ├── category.ejs
+│   └── menu.ejs
+
+Kalau folder upload belum ada:
+
+mkdir -p public/uploads
+Tahap 13.2 - Database
+
+Masuk MariaDB:
+
+mysql -u root -p
+
+Lalu:
+
+USE cafepos;
+
+Buat tabel menu:
+
+CREATE TABLE menus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kategori_id INT NOT NULL,
+    nama_menu VARCHAR(100) NOT NULL,
+    harga INT NOT NULL,
+    stok INT NOT NULL DEFAULT 0,
+    gambar VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (kategori_id)
+        REFERENCES categories(id)
+        ON DELETE CASCADE
+);
+Tahap 13.3 - Route Menu
+
+Buat file:
+
+nano routes/menu.js
+
+Isi:
+
+const express = require("express");
+const router = express.Router();
+
+const db = require("../config/database");
+const auth = require("../middleware/auth");
+
+router.get("/menu", auth, (req, res) => {
+
+    db.query(
+        "SELECT * FROM categories",
+        (err, kategori) => {
+
+            if (err) throw err;
+
+            db.query(
+                `SELECT menus.*, categories.nama_kategori
+                 FROM menus
+                 JOIN categories
+                 ON menus.kategori_id=categories.id`,
+                (err, menu) => {
+
+                    if (err) throw err;
+
+                    res.render("menu", {
+                        user: req.session.user,
+                        kategori,
+                        menu
+                    });
+
+                });
+
+        });
+
+});
+
+module.exports = router;
+Tahap 13.4 - Sidebar
+
+Tambahkan menu ini di views/layout/sidebar.ejs:
+
+<li class="nav-item">
+    <a href="/menu" class="nav-link">
+        <i class="nav-icon fas fa-coffee"></i>
+        <p>Menu</p>
+    </a>
+</li>
+Tahap 13.5 - View Menu
+
+Buat file:
+
+nano views/menu.ejs
+
+Isi:
+
+<%- include("layout/header") %>
+
+<%- include("layout/sidebar",{user:user}) %>
+
+<div class="content-wrapper">
+
+<section class="content-header">
+
+<div class="container-fluid">
+
+<h1>Master Data Menu</h1>
+
+</div>
+
+</section>
+
+<section class="content">
+
+<div class="container-fluid">
+
+<div class="card">
+
+<div class="card-header">
+
+<button class="btn btn-primary">
+
+Tambah Menu
+
+</button>
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Gambar</th>
+
+<th>Nama Menu</th>
+
+<th>Kategori</th>
+
+<th>Harga</th>
+
+<th>Stok</th>
+
+<th>Aksi</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% menu.forEach((m,index)=>{ %>
+
+<tr>
+
+<td><%= index+1 %></td>
+
+<td>-</td>
+
+<td><%= m.nama_menu %></td>
+
+<td><%= m.nama_kategori %></td>
+
+<td>Rp <%= m.harga %></td>
+
+<td><%= m.stok %></td>
+
+<td>
+
+<button class="btn btn-warning btn-sm">
+
+Edit
+
+</button>
+
+<button class="btn btn-danger btn-sm">
+
+Hapus
+
+</button>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<%- include("layout/footer") %>
+Hasil Tahap Ini
+
+Kalau semua langkah di atas selesai, saat membuka:
+
+http://IP-EC2:3000/menu
+
+kamu akan melihat:
+
+✅ Halaman Master Data Menu
+✅ Tabel Menu
+✅ Tombol Tambah Menu
+✅ Kolom Gambar
+✅ Kolom Nama
+✅ Kolom Kategori
+✅ Kolom Harga
+✅ Kolom Stok
+✅ Tombol Edit
+✅ Tombol Hapus
+Setelah halaman ini berhasil tampil, kita lanjut ke Tahap 13.6:
+📤 Upload gambar menu menggunakan Multer.
+📝 Form Tambah Menu.
+💾 Simpan data ke database.
+🖼️ Tampilkan gambar menu pada tabel.
+✏️ Edit dan 🗑️ Hapus menu.
+
+Dengan begitu Master Data Menu akan berfungsi penuh seperti aplikasi kasir profesional.
