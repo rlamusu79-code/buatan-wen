@@ -1,0 +1,238 @@
+Siap. Kita lanjut, tetapi jangan langsung lompat ke semua fitur. Kita bangun satu per satu agar tidak membingungkan dan mudah diperbaiki jika ada error.
+
+Tahap 12 - CRUD Kategori
+
+Target tahap ini:
+
+✅ Tabel categories di database
+✅ Halaman daftar kategori
+✅ Tambah kategori
+✅ Edit kategori
+✅ Hapus kategori
+Langkah 1 - Buat tabel categories
+
+Masuk ke MariaDB:
+
+sudo mysql
+
+Pilih database:
+
+USE cafepos;
+
+Buat tabel:
+
+CREATE TABLE IF NOT EXISTS categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Cek:
+
+SHOW TABLES;
+
+Harus muncul:
+
+categories
+users
+menus
+transactions
+transaction_details
+Langkah 2 - Buat Controller
+
+Buat file:
+
+nano controllers/categoryController.js
+
+Isi:
+
+const db = require("../config/database");
+
+// Menampilkan semua kategori
+exports.index = (req, res) => {
+
+    db.query(
+        "SELECT * FROM categories ORDER BY id DESC",
+        (err, results) => {
+
+            if (err) throw err;
+
+            res.render("categories/index", {
+                user: req.session.user,
+                categories: results
+            });
+
+        }
+    );
+
+};
+
+Simpan (Ctrl + O, Enter) lalu keluar (Ctrl + X).
+
+Langkah 3 - Buat Route
+
+Buat file:
+
+nano routes/category.js
+
+Isi:
+
+const express = require("express");
+const router = express.Router();
+
+const auth = require("../middleware/auth");
+const controller = require("../controllers/categoryController");
+
+router.get("/kategori", auth, controller.index);
+
+module.exports = router;
+Langkah 4 - Hubungkan ke app.js
+
+Di bagian atas app.js, tambahkan:
+
+const categoryRoute = require("./routes/category");
+
+Lalu setelah:
+
+app.use(authRoute);
+
+tambahkan:
+
+app.use(categoryRoute);
+Langkah 5 - Buat Folder View
+
+Buat folder:
+
+mkdir -p views/categories
+Langkah 6 - Buat Halaman Daftar
+
+Buat file:
+
+nano views/categories/index.ejs
+
+Isi:
+
+<%- include('../layout/header') %>
+<%- include('../layout/sidebar') %>
+
+<div class="content-wrapper">
+
+<section class="content-header">
+
+<div class="container-fluid">
+
+<h1>Data Kategori</h1>
+
+</div>
+
+</section>
+
+<section class="content">
+
+<div class="container-fluid">
+
+<a href="/kategori/tambah" class="btn btn-primary mb-3">
+
+Tambah Kategori
+
+</a>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Nama</th>
+
+<th>Deskripsi</th>
+
+<th>Aksi</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% categories.forEach(category => { %>
+
+<tr>
+
+<td><%= category.id %></td>
+
+<td><%= category.name %></td>
+
+<td><%= category.description %></td>
+
+<td>
+
+<a href="/kategori/edit/<%= category.id %>" class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a href="/kategori/hapus/<%= category.id %>" class="btn btn-danger btn-sm">
+
+Hapus
+
+</a>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</div>
+
+<%- include('../layout/footer') %>
+Hasil Setelah Tahap Ini
+
+Kalau semua sudah benar:
+
+Login → Dashboard
+Klik Kategori
+Muncul halaman daftar kategori (meskipun masih kosong)
+Setelah itu
+
+Kita lanjut membuat:
+
+Form Tambah Kategori
+Simpan ke database
+Edit kategori
+Hapus kategori
+Validasi data
+Saran
+
+Agar proyek ini benar-benar profesional dan tidak perlu banyak perubahan di tengah jalan, saya menyarankan kita menambahkan beberapa library sebelum melanjutkan fitur-fitur berikutnya:
+
+npm install express-validator
+npm install method-override
+npm install connect-flash
+npm install multer
+npm install moment
+npm install chart.js
+
+Library tersebut akan kita gunakan untuk:
+
+Validasi form.
+Mendukung metode PUT dan DELETE untuk edit/hapus data.
+Menampilkan pesan sukses atau gagal.
+Upload gambar menu.
+Format tanggal.
+Grafik penjualan di dashboard.
+
+Dengan begitu, saat kita masuk ke CRUD Menu, POS, Riwayat, dan Laporan, kita tidak perlu mengubah struktur aplikasi lagi.
