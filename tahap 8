@@ -1,0 +1,136 @@
+Siap. Karena login, dashboard, dan struktur project sudah ada, kita lanjut ke Tahap 13 — Master Data Menu.
+
+Kita akan membuat fitur seperti aplikasi kasir sungguhan.
+
+Struktur database
+
+Masuk ke MariaDB:
+
+mysql -u root -p
+
+Pilih database:
+
+USE cafepos;
+
+Buat tabel menus:
+
+CREATE TABLE menus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kategori_id INT NOT NULL,
+    nama_menu VARCHAR(100) NOT NULL,
+    harga DECIMAL(10,2) NOT NULL,
+    stok INT DEFAULT 0,
+    gambar VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (kategori_id) REFERENCES categories(id)
+);
+
+Cek:
+
+SHOW TABLES;
+
+Harus muncul:
+
+categories
+menus
+users
+Install Multer (Upload Gambar)
+
+Karena kita akan upload gambar menu.
+
+Kalau belum ada:
+
+npm install multer
+Buat folder upload
+mkdir -p public/uploads
+
+Cek:
+
+ls public
+
+Harus ada:
+
+adminlte
+css
+images
+js
+uploads
+Buat route baru
+nano routes/menu.js
+
+Isi awal:
+
+const express = require("express");
+const router = express.Router();
+const db = require("../config/database");
+const auth = require("../middleware/auth");
+
+router.get("/menu", auth, (req, res) => {
+
+    db.query(
+        `SELECT menus.*, categories.nama_kategori
+         FROM menus
+         JOIN categories
+         ON menus.kategori_id = categories.id`,
+        (err, menu) => {
+
+            db.query(
+                "SELECT * FROM categories",
+                (err2, kategori) => {
+
+                    res.render("menu", {
+                        user: req.session.user,
+                        menu,
+                        kategori
+                    });
+
+                });
+
+        });
+
+});
+
+module.exports = router;
+Tambahkan ke app.js
+
+Di bagian route:
+
+const menuRoute = require("./routes/menu");
+
+Lalu:
+
+app.use(menuRoute);
+Tambahkan menu di sidebar
+
+Pada views/layout/sidebar.ejs:
+
+<li class="nav-item">
+    <a href="/menu" class="nav-link">
+        <i class="nav-icon fas fa-coffee"></i>
+        <p>Menu</p>
+    </a>
+</li>
+Selanjutnya
+
+Tahap berikutnya kita akan membuat halaman Menu yang berisi:
+
+📋 Tabel daftar menu
+➕ Tombol Tambah Menu
+🖼️ Upload gambar
+💰 Harga
+📦 Stok
+🏷️ Pilihan kategori
+✏️ Edit
+🗑️ Hapus
+
+Hasilnya akan mirip aplikasi kasir profesional yang digunakan di kafe dan restoran.
+
+Sebelum lanjut
+
+Saya ingin memastikan satu hal: apakah tabel kategori yang kamu buat bernama categories atau kategori?
+
+Jalankan di MariaDB:
+
+SHOW TABLES;
+
+Lalu kirim hasilnya. Dengan begitu saya bisa menyesuaikan query agar tidak error.
